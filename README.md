@@ -809,101 +809,98 @@ The hardware experiment is important because simulation and implementation repor
 
 # 20. Results and Metrics
 
-The final version of this section will contain the verified post-implementation results for the Exact and Logarithmic multiplier configurations.
+The following values represent the **current preliminary Vivado results** from the present development state of the Exact and Logarithmic multiplier implementations. They are included here so that the repository documents the current state of the project rather than leaving the results section empty.
 
-## 20.1 FPGA Resource Utilization
+> **Important:** These are preliminary synthesis/power/timing results. They will be replaced or supplemented with the final post-implementation and physical Nexys 4 DDR validation results after the hardware run. The current power reports in particular carry **low confidence** because of limited activity information.
 
-The final comparison will include:
+## 20.1 FPGA Resource Utilization — Preliminary
 
 | Resource | Exact | Logarithmic | Difference |
 |---|---:|---:|---:|
-| LUTs | TBD | TBD | TBD |
-| LUT Utilization | TBD | TBD | TBD |
-| Flip-Flops | TBD | TBD | TBD |
-| FF Utilization | TBD | TBD | TBD |
-| BRAM | TBD | TBD | TBD |
-| DSP | TBD | TBD | TBD |
-| I/O | TBD | TBD | TBD |
+| LUTs | **138** | **186** | **+48 (+34.8%)** |
+| LUT Utilization | **0.22%** | **0.29%** | **+0.07 percentage points** |
+| Registers | **56** | **56** | **0** |
+| Flip-Flops | **55** | **55** | **0** |
+| Latches | **1** | **1** | **0** |
+| BRAM | **0** | **0** | **0** |
+| DSP | **0** | **0** | **0** |
+| I/O | **72** | **76** | **+4** |
 
-> Values will be updated using the final post-implementation Vivado reports.
+The preliminary synthesis results currently show that the **Exact multiplier implementation uses fewer LUTs than the Logarithmic implementation**. Both configurations use zero DSP blocks and zero BRAM resources in the reported design.
 
----
-
-## 20.2 Timing
-
-The final timing comparison will include:
-
-| Timing Metric | Exact | Logarithmic |
-|---|---:|---:|
-| Target Frequency | 100 MHz | 100 MHz |
-| Clock Period | 10 ns | 10 ns |
-| WNS | TBD | TBD |
-| TNS | TBD | TBD |
-| WHS | TBD | TBD |
-| THS | TBD | TBD |
-| Failing Endpoints | TBD | TBD |
-| Maximum Frequency | TBD | TBD |
-
-The final values should be taken from the final implementation timing reports.
+This is an important observation rather than a result to hide: the current implementation does **not** demonstrate a resource-utilization advantage for the Logarithmic multiplier. The final post-implementation reports will determine whether this relationship remains after optimization, placement, and routing.
 
 ---
 
-## 20.3 Power
+## 20.2 Timing — Preliminary
 
-The final power comparison will include:
+The current timing analysis targets a **100 MHz clock**, corresponding to a **10 ns clock period**.
+
+| Timing Metric | Current Reported Result |
+|---|---:|
+| Target Frequency | **100 MHz** |
+| Clock Period | **10 ns** |
+| WNS | **+4.335 ns** |
+| TNS | **0 ns** |
+| WHS | **+0.179 ns** |
+| THS | **0 ns** |
+| Failing Endpoints | **0** |
+
+The current timing report indicates that all specified timing constraints are met, with positive setup and hold slack and no failing endpoints.
+
+The reported worst setup path has approximately **5.302 ns** of data-path delay and **7 logic levels**. The current report therefore indicates substantial timing margin at the 100 MHz target.
+
+> **Note:** An earlier implementation result recorded during development showed WNS = **+6.775 ns** and WHS = **+0.282 ns**. The final report set will be used to establish the definitive Exact-vs-Log timing comparison and resolve the difference between these development-stage results.
+
+---
+
+## 20.3 Power — Preliminary
+
+The current Vivado power reports estimate the following values for both configurations:
 
 | Power Metric | Exact | Logarithmic |
 |---|---:|---:|
-| Total Power | TBD | TBD |
-| Dynamic Power | TBD | TBD |
-| Static Power | TBD | TBD |
-| Clock Power | TBD | TBD |
-| Logic Power | TBD | TBD |
-| Signal Power | TBD | TBD |
+| Total Power | **98 mW** | **98 mW** |
+| Dynamic Power | **7 mW** | **7 mW** |
+| Static Power | **91 mW** | **91 mW** |
 
-Clock gating is expected to primarily affect dynamic power.
+At the current reporting stage, the estimated power is therefore essentially identical for the two implementations.
 
-Final conclusions will be based on the measured/estimated post-implementation results rather than assuming an advantage for either multiplier.
+The power report indicates that the static component represents the majority of the estimated total power, while clock gating is primarily intended to reduce **dynamic switching power**.
+
+> **Important:** The current Vivado power estimates are preliminary and should not be interpreted as evidence that the Logarithmic multiplier provides a power advantage. The reports indicate **low confidence** because activity information is incomplete and the design state used for the estimate is not the final fully implemented state. Final post-implementation power results will be added after the next Vivado run.
 
 ---
 
 ## 20.4 Image Quality
 
-Image quality will be evaluated using quantitative metrics such as:
+The current visual results demonstrate the progression from the original image through baseline Sobel filtering to the enhanced NMS + adaptive-thresholding implementations.
 
-### Mean Squared Error
+The current quantitative image-quality metrics supplied during development are:
 
-\[
-MSE=\frac{1}{N}\sum_{i=1}^{N}(I_i-R_i)^2
-\]
+| Metric | Current Reported Value |
+|---|---:|
+| MSE | **0.0000** |
+| PSNR | **∞ dB** |
+| SSIM | **1.0000** |
 
-### Peak Signal-to-Noise Ratio
+These values indicate a mathematically perfect match **for the pair of images used in that particular comparison**.
 
-\[
-PSNR=10\log_{10}\left(\frac{MAX_I^2}{MSE}\right)
-\]
+However, they should **not yet be presented as evidence that the Exact and Logarithmic multiplier outputs are identical**, because the visual outputs show differences and the exact reference/comparison pair needs to be explicitly verified.
 
-### Structural Similarity Index
+For the final evaluation, the following comparisons will be reported separately:
 
-\[
-SSIM
-\]
-
-The final evaluation should clearly specify what two images are being compared.
-
-Recommended comparisons include:
-
-### Exact vs. Log
+### Exact vs. Logarithmic
 
 ```text
 Exact edge map
        vs.
-Log edge map
+Logarithmic edge map
 ```
 
-This evaluates the image-quality effect of the logarithmic multiplier.
+This measures the image-quality impact of replacing the Exact multiplier with the Logarithmic multiplier.
 
-### Hardware vs. Reference
+### Hardware/RTL vs. Reference
 
 ```text
 Software/reference edge map
@@ -911,9 +908,27 @@ Software/reference edge map
 FPGA/RTL edge map
 ```
 
-This evaluates implementation correctness.
+This evaluates functional correctness of the hardware implementation.
 
-> A reported MSE of zero, infinite PSNR, and SSIM of 1.0 should only be interpreted as a perfect match when the two actual image arrays being compared are independently verified to be identical. These metrics should not be used as a meaningful approximation-quality claim when an image is accidentally compared with itself or with an identical copy.
+Additional metrics such as RMSE, edge precision, recall, and F1 score can also be included if available.
+
+---
+
+## 20.5 Preliminary Interpretation
+
+The current results establish the following development-stage observations:
+
+- The accelerator successfully synthesizes.
+- The design uses a relatively small number of FPGA resources.
+- Both multiplier configurations currently use **0 DSPs and 0 BRAMs**.
+- The Exact implementation currently uses fewer LUTs than the Logarithmic implementation.
+- Both current power reports estimate approximately **98 mW total power**.
+- The current timing report meets the **100 MHz** target with positive setup and hold slack.
+- The visual results demonstrate a clear difference between the baseline Sobel output and the enhanced **NMS + adaptive-thresholding** output.
+- The Exact and Logarithmic implementations produce broadly similar edge structures while exhibiting visible differences that should be quantified using a correctly defined image-quality comparison.
+
+The final research conclusion will therefore be based on the **post-implementation resource, timing, power, image-quality, and physical FPGA results**, rather than assuming beforehand that either multiplier architecture is superior.
+
 
 ---
 
